@@ -1,0 +1,149 @@
+<html>
+  <head>
+    <meta charset="utf8" />
+    <title>2048</title>
+    <style type="text/css">
+      .haha {
+        border-width: 2;
+        font-size: 50;
+        font-weight: bold;
+        color: white;
+        background-color: grey;
+        text-align: center;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <script>
+    var a = new Array(16)
+    clear()
+    produce()
+    init()
+    draw()
+    onkeydown = keyDown
+    function clear() {
+      for (var i = 0; i < 16; i++) a[i] = 0
+    }
+    function down() {
+      turnClockwise()
+      left()
+      turnClockwise()
+      turnClockwise()
+      turnClockwise()
+    }
+    function up() {
+      turnClockwise()
+      turnClockwise()
+      turnClockwise()
+      left()
+      turnClockwise()
+    }
+    function right() {
+      turnClockwise()
+      turnClockwise()
+      left()
+      turnClockwise()
+      turnClockwise()
+    }
+    function left() {
+      for (var i = 0; i < 4; i++) {
+        var k = 0
+        var merge = false
+        for (var j = 0; j < 4; j++) {
+          if (a[i * 4 + j] != 0) {
+            if (k > 0 && !merge && a[i * 4 + j] == a[i * 4 + k - 1]) {
+              a[i * 4 + k - 1] *= 2
+              merge = true
+            } else {
+              a[i * 4 + k++] = a[i * 4 + j]
+            }
+          }
+        }
+        for (; k < 4; k++) a[i * 4 + k] = 0
+      }
+    }
+    function turnClockwise() {
+      var b = new Array(16)
+      for (var i = 0; i < 4; i++) {
+        for (var j = 0; j < 4; j++) {
+          b[j * 4 + 3 - i] = a[i * 4 + j]
+        }
+      }
+      a = b
+    }
+    function keyDown(e) {
+      var save = a.slice(0, a.length)
+      switch (e.keyCode) {
+        case 37:
+          left()
+          break
+        case 38:
+          up()
+          break
+        case 39:
+          right()
+          break
+        case 40:
+          down()
+          break
+      }
+      if (over()) {
+        alert("you died!")
+        clear()
+        produce()
+        draw()
+      } else if (moved(save, a)) {
+        produce()
+        draw()
+      }
+    }
+    function moved(a, b) {
+      for (var i = 0; i < 16; i++) if (a[i] != b[i]) return true
+      return false
+    }
+    function over() {
+      for (var i = 0; i < 16; i++) {
+        if (a[i] == 0) return false
+      }
+      for (var i = 0; i < 4; i++) {
+        for (var j = 0; j < 3; j++) {
+          if (a[i * 4 + j] == a[i * 4 + j + 1] || a[j * 4 + i + 4] == a[j * 4 + i]) {
+            return false
+          }
+        }
+      }
+      return true
+    }
+    function produce() {
+      var x
+      do {
+        x = Math.floor(Math.random() * 16)
+      } while (a[x] != 0)
+      a[x] = Math.random() > 0.2 ? 2 : 4
+    }
+    function draw() {
+      for (var i = 0; i < 4; i++) {
+        for (var j = 0; j < 4; j++) {
+          var img = document.getElementById("pic" + (i * 4 + j))
+          img.innerHTML = a[i * 4 + j] == 0 ? "" : a[i * 4 + j]
+          img.style.color = (a[i * 4 + j] * 120) & 0xffffff
+        }
+      }
+    }
+    function cout(s) {
+      document.write(s)
+    }
+    function init() {
+      cout("<table align='center'>")
+      for (var i = 0; i < 4; i++) {
+        cout("<tr>")
+        for (var j = 0; j < 4; j++) {
+          cout("<td width=150 height=150  class='haha' id=pic" + (i * 4 + j) + ">" + a[i * 4 + j] + "</td>")
+        }
+        cout("</tr>")
+      }
+      cout("</table>")
+    }
+  </script>
+  <html></html>
+</html>
